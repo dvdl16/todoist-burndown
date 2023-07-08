@@ -10,7 +10,7 @@ jobs:
     steps:
     - name: Report number of open PRs to Uptime Kuma
       run: |
-        pr_count=$(curl -s https://api.github.com/repos/dvdl16/github2todoist/pulls | jq length)
+        pr_count=$(curl -s https://api.github.com/repos/dvdl16/todoist-burndown/pulls | jq length)
         acceptable="3"
         status="down"
         msg="More%20than%203%20PRs%20are%20open"
