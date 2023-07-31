@@ -89,7 +89,7 @@ export default {
 
 			// Get list of completed tasks since two weeks ago
 			const sinceParam = twoWeeksAgo.toISOString();
-			let completedResponse = await fetch(`https://api.todoist.com/sync/v9/completed/get_all?since=${sinceParam}`, config);
+			let completedResponse = await fetch(`https://api.todoist.com/sync/v9/completed/get_all?since=${sinceParam}&limit=200`, config);
 		
 			if (completedResponse.ok) {
 				const completedItems: any = await completedResponse.json();
