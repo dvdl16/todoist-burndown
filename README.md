@@ -2,6 +2,10 @@
 
 A simple Cloudflare Worker that creates a statistics chart of my Todoist tasks
 
+Example of the chart being created by quickchart.io
+
+![todoist chart](docs/image.png)
+
 
 ## Clouflare
 
