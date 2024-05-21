@@ -53,13 +53,19 @@ export default {
 		if (todoistResponse.ok) {
 			const tasks: [] = await todoistResponse.json();
 
+			// Filter tasks based recurrence
+			const filteredTasks = tasks.filter((task: any) => {
+				const isNonRecurring = !(task.due && task.due.is_recurring);
+				return isNonRecurring;
+			});
+
 			// Get current date and two weeks ago date in UTC
 			const currentDate = new Date();
 			const twoWeeksAgo = new Date();
 			twoWeeksAgo.setDate(currentDate.getDate() - 14);
 		
 			// Filter out tasks created before 2 weeks ago
-			const olderTasks = tasks.filter((task: any) => {
+			const olderTasks = filteredTasks.filter((task: any) => {
 				const taskDate = new Date(task.created_at);
 				return taskDate < twoWeeksAgo;
 			});
@@ -76,7 +82,7 @@ export default {
 			}
 		
 			// Group tasks created in past two weeks per day
-			tasks.forEach((task: any) => {
+			filteredTasks.forEach((task: any) => {
 				const taskDate = new Date(task.created_at);
 				if (taskDate >= twoWeeksAgo) {
 					const dateString = taskDate.toISOString().split('T')[0];
@@ -94,8 +100,23 @@ export default {
 			if (completedResponse.ok) {
 				const completedItems: any = await completedResponse.json();
 
+				// Initialize an array to hold promises for fetching task details
+				const taskDetailsPromises = completedItems.items.map((task: any) => {
+					const url = `https://api.todoist.com/sync/v9/items/get?item_id=${task.task_id}&all_data=false`;
+					return fetch(url, config).then(res => res.json());
+				});
+
+				// Resolve all promises and process the tasks further
+				const taskDetails = await Promise.all(taskDetailsPromises);
+
+				// Filter tasks based on creation date and recurrence
+				const filteredItems = taskDetails.filter((taskDetail: any) => {
+					const isNonRecurring = !(taskDetail.due && taskDetail.due.is_recurring);
+					return isNonRecurring;
+				});
+
 				// Group completed tasks per day
-				completedItems.items.forEach((item: any) => {
+				filteredItems.forEach((item: any) => {
 					const itemDate = new Date(item.completed_at);
 					const dateString = itemDate.toISOString().split('T')[0];
 					if (!dailyCompletedCount[dateString]) {
