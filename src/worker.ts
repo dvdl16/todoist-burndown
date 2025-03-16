@@ -103,8 +103,13 @@ export default {
 				// Initialize an array to hold promises for fetching task details
 				const taskDetailsPromises = completedItems.items.map((task: any) => {
 					const url = `https://api.todoist.com/sync/v9/items/get?item_id=${task.task_id}&all_data=false`;
-					return fetch(url, config).then(res => res.json());
-				});
+					return fetch(url, config)
+					  .then(res => res.json())
+					  .then(taskDetail => {
+						// Merge the completed_at property from the original task
+						return { ...(taskDetail as object), completed_at: task.completed_at };
+					  });
+				  });
 
 				// Resolve all promises and process the tasks further
 				const taskDetails = await Promise.all(taskDetailsPromises);
@@ -118,6 +123,9 @@ export default {
 				// Group completed tasks per day
 				filteredItems.forEach((item: any) => {
 					const itemDate = new Date(item.completed_at);
+					console.log("item.completed_at", item.completed_at);
+					console.log("itemDate", itemDate);
+					console.log("item", item);
 					const dateString = itemDate.toISOString().split('T')[0];
 					if (!dailyCompletedCount[dateString]) {
 						dailyCompletedCount[dateString] = 0;
@@ -190,6 +198,10 @@ export default {
 					wasSuccessful = telegramResponse.ok ? 'success' : 'fail';
 				}
 			}
+		}
+		else {
+			console.log("Todoist Response failed");
+			console.log(todoistResponse);
 		}
 
 		// You could store this result in KV, write to a D1 Database, or publish to a Queue.

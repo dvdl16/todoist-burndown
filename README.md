@@ -36,6 +36,11 @@ To update `wrangler`:
 npm install wrangler
 ```
 
+To run locally:
+```shell
+npx wrangler dev --test-scheduled
+```
+
 
 ## Deployment
 
