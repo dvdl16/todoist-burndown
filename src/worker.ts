@@ -61,13 +61,13 @@ export default {
 
 			// Get current date and two weeks ago date in UTC
 			const currentDate = new Date();
-			const twoWeeksAgo = new Date();
-			twoWeeksAgo.setDate(currentDate.getDate() - 14);
+			const oneWeekAgo = new Date();
+			oneWeekAgo.setDate(currentDate.getDate() - 7);
 		
 			// Filter out tasks created before 2 weeks ago
 			const olderTasks = filteredTasks.filter((task: any) => {
 				const taskDate = new Date(task.created_at);
-				return taskDate < twoWeeksAgo;
+				return taskDate < oneWeekAgo;
 			});
 			const olderTaskCount = olderTasks.length;
 
@@ -75,7 +75,7 @@ export default {
 			let dailyCompletedCount: {[key: string]: number} = {};
 		
 			// Initialize counts for each day in the last two weeks to 0
-			for (let d = new Date(twoWeeksAgo); d <= currentDate; d.setDate(d.getDate() + 1)) {
+			for (let d = new Date(oneWeekAgo); d <= currentDate; d.setDate(d.getDate() + 1)) {
 				const dateString = d.toISOString().split('T')[0];
 				dailyTaskCount[dateString] = 0;
 				dailyCompletedCount[dateString] = 0;
@@ -84,7 +84,7 @@ export default {
 			// Group tasks created in past two weeks per day
 			filteredTasks.forEach((task: any) => {
 				const taskDate = new Date(task.created_at);
-				if (taskDate >= twoWeeksAgo) {
+				if (taskDate >= oneWeekAgo) {
 					const dateString = taskDate.toISOString().split('T')[0];
 					if (!dailyTaskCount[dateString]) {
 						dailyTaskCount[dateString] = 0;
@@ -94,7 +94,7 @@ export default {
 			});
 
 			// Get list of completed tasks since two weeks ago
-			const sinceParam = twoWeeksAgo.toISOString();
+			const sinceParam = oneWeekAgo.toISOString();
 			let completedResponse = await fetch(`https://api.todoist.com/sync/v9/completed/get_all?since=${sinceParam}&limit=200`, config);
 		
 			if (completedResponse.ok) {
