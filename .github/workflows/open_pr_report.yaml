@@ -18,5 +18,4 @@ jobs:
            status="true"
            msg="OK"
         fi
-        fi
         curl -X POST -H "Authorization: Bearer ${{ secrets.UPTIME_TOKEN }}" "${{ secrets.UPTIME_KUMA_URL }}?success=$status&error=$msg&duration=${pr_count}ms"
