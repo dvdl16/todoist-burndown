@@ -13,7 +13,9 @@ async function fetchAllPages(baseUrl: string, config: RequestInit): Promise<any[
 		const response = await fetch(url.toString(), config);
 		if (!response.ok) throw new Error(`Failed to fetch ${url.toString()}: ${response.status}`);
 		const data: any = await response.json();
-		results = results.concat(data.results || []);
+		// The active-tasks endpoint returns `results`, while the completed-tasks
+		// endpoints return `items`.
+		results = results.concat(data.results || data.items || []);
 		cursor = data.next_cursor || null;
 	} while (cursor);
 
@@ -58,7 +60,7 @@ export default {
 
 			// Group tasks created in past week per day
 			filteredTasks.forEach((task: any) => {
-				const taskDate = new Date(task.created_at);
+				const taskDate = new Date(task.added_at);
 				if (taskDate >= oneWeekAgo) {
 					const dateString = taskDate.toISOString().split('T')[0];
 					if (!dailyTaskCount[dateString]) {
