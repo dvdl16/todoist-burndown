@@ -68,10 +68,13 @@ export default {
 				}
 			});
 
-			// Get list of completed tasks since one week ago
+			// Get list of completed tasks since one week ago.
+			// The by_completion_date endpoint requires both `since` and `until`
+			// (max 3-month window between them).
 			const sinceParam = oneWeekAgo.toISOString();
+			const untilParam = currentDate.toISOString();
 			const completedItems = await fetchAllPages(
-				`https://api.todoist.com/api/v1/tasks/completed/by_completion_date?since=${sinceParam}&limit=200`,
+				`https://api.todoist.com/api/v1/tasks/completed/by_completion_date?since=${sinceParam}&until=${untilParam}&limit=200`,
 				config
 			);
 
