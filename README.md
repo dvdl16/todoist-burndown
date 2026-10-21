@@ -36,6 +36,17 @@ To update `wrangler`:
 npm install wrangler
 ```
 
+To update dependencies
+
+```shell
+npx npm-check-updates
+npx npm-check-updates -u
+
+npm install
+```
+
+
+
 To run locally:
 ```shell
 npx wrangler dev --test-scheduled
